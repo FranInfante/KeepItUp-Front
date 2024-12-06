@@ -19,4 +19,9 @@ export class WeighInsService {
   addWeighIn(weighIn: WeighIn): Observable<WeighIn> {
     return this.http.post<WeighIn>(WEIGHIN_ROUTES.create(), weighIn);
   }
+
+  deleteWeighIn(weighInId: number): Observable<void> {
+    return this.http.delete<void>(WEIGHIN_ROUTES.delete(weighInId));
+  }
+  
 }

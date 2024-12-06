@@ -22,6 +22,9 @@ export class WeighInsComponent implements OnInit {
   userId: number = 0;
   user: User | null = null;
   subscriptions: SubscriptionLike[] = [];
+  showForm: boolean = false;
+  showDeleteModal: boolean = false;
+  logToDeleteId?: number;
 
   constructor(
     private fb: FormBuilder,
@@ -52,11 +55,12 @@ export class WeighInsComponent implements OnInit {
     if (this.weightForm.valid) {
       const newLog: WeighIn = {
         ...this.weightForm.value,
-        userId: this.userId, // Add userId to the payload
+        userId: this.userId,
       };
 
       this.weighInsService.addWeighIn(newLog).subscribe({
         next: (loggedWeighIn) => {
+          this.showForm = !this.showForm;
           this.previousLogs.push(loggedWeighIn);
           this.calculateWeightChange();
           this.weightForm.reset({
@@ -83,6 +87,23 @@ export class WeighInsComponent implements OnInit {
     });
   }
 
+  deleteLog(id?: number): void {
+    if (id === undefined) {
+      console.error('Invalid log id:', id);
+      return;
+    }
+  
+    this.weighInsService.deleteWeighIn(id).subscribe({
+      next: () => {
+        this.previousLogs = this.previousLogs.filter((log) => log.id !== id);
+        this.calculateWeightChange();
+      },
+      error: (error) => {
+        console.error('Error deleting log:', error);
+      },
+    });
+  }
+
   calculateWeightChange(): void {
     if (this.previousLogs.length > 1) {
       const initialWeight = this.previousLogs[0].weight;
@@ -93,4 +114,42 @@ export class WeighInsComponent implements OnInit {
       this.totalWeightChange = '0.0 kg';
     }
   }
+  toggleForm(): void {
+    this.showForm = !this.showForm;
+  }
+
+  showDeleteConfirmation(id?: number): void {
+    if (id === undefined) {
+      console.error('Invalid log id:', id);
+      return;
+    }
+    this.logToDeleteId = id;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.logToDeleteId = undefined;
+  }
+
+  confirmDelete(): void {
+    if (this.logToDeleteId === undefined) {
+      console.error('No log selected for deletion');
+      return;
+    }
+
+    this.weighInsService.deleteWeighIn(this.logToDeleteId).subscribe({
+      next: () => {
+        this.previousLogs = this.previousLogs.filter(
+          (log) => log.id !== this.logToDeleteId
+        );
+        this.calculateWeightChange();
+        this.cancelDelete();
+      },
+      error: (error) => {
+        console.error('Error deleting log:', error);
+      },
+    });
+  }
+  
 }
