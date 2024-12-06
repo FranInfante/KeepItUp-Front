@@ -1,0 +1,19 @@
+<div
+  *ngFor="let toast of toasts"
+  [ngClass]="{
+    'bg-green-500 text-white': toast.type === 'success',
+    'bg-red-500 text-white': toast.type === 'danger',
+    'bg-blue-500 text-white': toast.type === 'info'
+  }"
+  class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-80 sm:w-64 p-4 rounded-lg shadow-md transition duration-300 ease-out"
+>
+  <div class="flex justify-between items-center">
+    <div>{{ toast.body }}</div>
+    <button
+      class="text-white hover:text-gray-200 focus:outline-none"
+      (click)="removeToast(toast.id)"
+    >
+      ✖
+    </button>
+  </div>
+</div>
