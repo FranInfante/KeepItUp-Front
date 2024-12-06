@@ -12,6 +12,7 @@ export class UserService {
   private authToken: string | null = null;
   private user: User | null = null;
   userSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  
 
   constructor(private http: HttpClient) {
     this.authToken = localStorage.getItem('authToken'); 

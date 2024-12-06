@@ -4,6 +4,9 @@ import { CommonModule, formatDate } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WeighIn } from '../../shared/interfaces/weighin';
 import { WeighInsService } from '../../shared/service/weighins.service';
+import { User } from '../../shared/interfaces/users';
+import { SubscriptionLike } from 'rxjs';
+import { UserService } from '../../shared/service/user.service';
 
 @Component({
   selector: 'app-weighins',
@@ -16,27 +19,41 @@ export class WeighInsComponent implements OnInit {
   weightForm!: FormGroup;
   previousLogs: WeighIn[] = [];
   totalWeightChange: string = '0.0 kg';
+  userId: number = 0;
+  user: User | null = null;
+  subscriptions: SubscriptionLike[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private weighInsService: WeighInsService
+    private weighInsService: WeighInsService,
+    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
-    this.loadLogs();
+    this.subscriptions.push(
+      this.userService.getCurrentUser().subscribe(user => {
+        if (user && user.id) {
+          this.userId = user.id;
+          this.loadLogs();
+        }
+      })
+    );
   }
 
   initializeForm(): void {
     this.weightForm = this.fb.group({
       weight: ['', [Validators.required, Validators.min(1)]],
-      date: [formatDate(new Date(), 'yyyy-MM-dd', 'en')], // Default to today's date
+      date: [formatDate(new Date(), 'yyyy-MM-dd', 'en')],
     });
   }
 
   logWeight(): void {
     if (this.weightForm.valid) {
-      const newLog: WeighIn = this.weightForm.value;
+      const newLog: WeighIn = {
+        ...this.weightForm.value,
+        userId: this.userId, // Add userId to the payload
+      };
 
       this.weighInsService.addWeighIn(newLog).subscribe({
         next: (loggedWeighIn) => {
@@ -55,7 +72,7 @@ export class WeighInsComponent implements OnInit {
   }
 
   loadLogs(): void {
-    this.weighInsService.getWeighIns().subscribe({
+    this.weighInsService.getWeighIns(this.userId).subscribe({
       next: (logs) => {
         this.previousLogs = logs;
         this.calculateWeightChange();

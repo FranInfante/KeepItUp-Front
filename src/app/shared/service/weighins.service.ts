@@ -8,11 +8,12 @@ import { WEIGHIN_ROUTES } from '../routes/weighins-routes';
   providedIn: 'root'
 })
 export class WeighInsService {
+  
 
   constructor(private http: HttpClient) {}
 
-  getWeighIns(): Observable<WeighIn[]> {
-    return this.http.get<WeighIn[]>(WEIGHIN_ROUTES.list());
+  getWeighIns(userId: number): Observable<WeighIn[]> {
+    return this.http.get<WeighIn[]>(WEIGHIN_ROUTES.list(userId));
   }
 
   addWeighIn(weighIn: WeighIn): Observable<WeighIn> {
