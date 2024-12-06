@@ -1,5 +1,5 @@
 export const LOCATIONS = {
-  login: '/login',
+  login: '',
   register: '/register',
   menu: '/menu',
   weighins: '/weighins',
