@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastService } from '../../service/toast.service';
 import { CommonModule } from '@angular/common';
+import { Toast } from '../../interfaces/toast';
 
 @Component({
   selector: 'app-toast',
@@ -10,7 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './toast.component.css'
 })
 export class NgbdToastInline implements OnInit {
-  toasts: { id: number; body: string; type: 'success' | 'danger' | 'info' }[] = [];
+  toasts: Toast[] = [];
 
   constructor(private toastService: ToastService) {}
 
