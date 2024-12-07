@@ -151,5 +151,7 @@ export class WeighInsComponent implements OnInit {
       },
     });
   }
+
+  
   
 }
