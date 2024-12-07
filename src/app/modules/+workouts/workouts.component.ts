@@ -31,6 +31,7 @@ export class WorkoutsComponent implements OnInit {
   user: User | null = null;
   workoutToDeleteId?: number;
   showDeleteModal: boolean = false;
+  workoutNames: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -40,15 +41,28 @@ export class WorkoutsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
-
+    
     this.subscriptions.push(
       this.userService.getCurrentUser().subscribe((user) => {
         if (user && user.id) {
           this.userId = user.id;
           this.loadWorkouts();
+          this.loadWorkoutNames();
         }
       })
     );
+  }
+
+  loadWorkoutNames(): void {
+    this.workoutService.getUniqueWorkoutNames(this.userId).subscribe({
+      next: (names) => {
+        this.workoutNames = names;
+        console.log(this.workoutNames);
+      },
+      error: (error) => {
+        console.error('Error fetching workout names:', error);
+      },
+    });
   }
 
   initializeForm(): void {
@@ -60,10 +74,18 @@ export class WorkoutsComponent implements OnInit {
 
   logWorkout(): void {
     if (this.workoutForm.valid) {
-      const newWorkout: Workout = this.workoutForm.value;
+      
+      const newWorkout: Workout = {...this.workoutForm.value, userId: this.userId,};
+
       this.workoutService.addWorkout(newWorkout).subscribe((workout) => {
         this.workoutLogs.push(workout);
+        this.workoutLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         this.totalWorkouts++;
+
+        if (!this.workoutNames.includes(workout.name)) {
+          this.workoutNames.push(workout.name);
+        }
+
         this.toggleForm();
         this.workoutForm.reset({
           name: '',
@@ -75,7 +97,7 @@ export class WorkoutsComponent implements OnInit {
 
   loadWorkouts(): void {
     this.workoutService.getWorkouts(this.userId).subscribe((workouts) => {
-      this.workoutLogs = workouts;
+      this.workoutLogs = workouts.sort((a,b)=> new Date(b.date).getTime() - new Date(a.date).getTime());
       this.totalWorkouts = workouts.length;
     });
   }

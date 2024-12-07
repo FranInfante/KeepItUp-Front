@@ -62,6 +62,7 @@ export class WeighInsComponent implements OnInit {
         next: (loggedWeighIn) => {
           this.showForm = !this.showForm;
           this.previousLogs.push(loggedWeighIn);
+          this.previousLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           this.calculateWeightChange();
           this.weightForm.reset({
             weight: '',
@@ -78,7 +79,7 @@ export class WeighInsComponent implements OnInit {
   loadLogs(): void {
     this.weighInsService.getWeighIns(this.userId).subscribe({
       next: (logs) => {
-        this.previousLogs = logs;
+        this.previousLogs = logs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         this.calculateWeightChange();
       },
       error: (error) => {

@@ -16,6 +16,8 @@
     </div>
   </div>
 
+  
+
   <!-- Main Content -->
   <div class="flex flex-grow items-center justify-center">
     <div class="w-full max-w-lg text-gray-100 rounded-xl p-6 space-y-8">
@@ -142,12 +144,17 @@
                 >Workout Name</label
               >
               <input
+                list="workoutNames"
                 type="text"
                 id="workoutName"
                 formControlName="name"
                 class="w-full text-center mt-1 px-3 py-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
+                placeholder="Select or type a workout name"
                 required
               />
+              <datalist id="workoutNames">
+                <option *ngFor="let name of workoutNames" [value]="name"></option>
+              </datalist>
             </div>
             <div class="mb-4">
               <label for="date" class="block text-sm font-medium text-gray-400"

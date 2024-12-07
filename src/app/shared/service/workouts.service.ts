@@ -21,4 +21,8 @@ export class WorkoutsService {
   deleteWorkout(id: number): Observable<void> {
     return this.http.delete<void>(WORKOUT_ROUTES.delete(id));
   }
+
+  getUniqueWorkoutNames(userId: number): Observable<string[]> {
+    return this.http.get<string[]>(WORKOUT_ROUTES.uniquenamesbyid(userId));
+  }
 }
