@@ -57,7 +57,6 @@ export class WorkoutsComponent implements OnInit {
     this.workoutService.getUniqueWorkoutNames(this.userId).subscribe({
       next: (names) => {
         this.workoutNames = names;
-        console.log(this.workoutNames);
       },
       error: (error) => {
         console.error('Error fetching workout names:', error);

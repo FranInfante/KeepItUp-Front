@@ -18,8 +18,8 @@ export class WorkoutsService {
     return this.http.post<Workout>(WORKOUT_ROUTES.create(), workout);
   }
 
-  deleteWorkout(id: number): Observable<void> {
-    return this.http.delete<void>(WORKOUT_ROUTES.delete(id));
+  deleteWorkout(workoutId: number): Observable<void> {
+    return this.http.delete<void>(WORKOUT_ROUTES.delete(workoutId));
   }
 
   getUniqueWorkoutNames(userId: number): Observable<string[]> {
